@@ -93,3 +93,27 @@ for root, dirs, files in os.walk(folder_path):
     if os.path.basename(root).startswith("2023"):
         for filename in files:
             print(os.path.join(root, filename))
+
+import re
+
+# 假设我们有以下的文件名列表
+file_names = [
+    'report20230207.docx',
+    'summary2023-02-07.txt',
+    'data_20230208.csv',
+    # 其他文件名...
+]
+
+# 定义一个正则表达式来匹配日期格式 YYYYMMDD 或 YYYY-MM-DD
+date_pattern = re.compile(r'\d{4}-?\d{2}-?\d{2}')
+
+# 提取日期并收集到一个列表中
+dates = []
+for file_name in file_names:
+    match = date_pattern.search(file_name)
+    if match:
+        dates.append(match.group())
+
+# 打印所有提取到的日期
+print(dates)
+
