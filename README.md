@@ -80,3 +80,16 @@ for subdir, dirs, files in os.walk(parent_folder_path):
 combined_df = pd.concat(dfs, ignore_index=True)
 
 # combined_df现在包含所有子文件夹中CSV文件的数据
+
+
+import os
+
+# 设置你的文件夹路径
+folder_path = '你的文件夹路径'
+
+# 遍历文件夹
+for root, dirs, files in os.walk(folder_path):
+    # 检查当前root是否是以"2023"开头的子文件夹
+    if os.path.basename(root).startswith("2023"):
+        for filename in files:
+            print(os.path.join(root, filename))
