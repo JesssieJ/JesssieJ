@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 def convert_csv_to_parquet(source_folder, target_folder):
     """
@@ -22,7 +24,7 @@ def convert_csv_to_parquet(source_folder, target_folder):
         if not os.path.exists(target_file_path):
             print(f"Converting {csv_file} to Parquet format.")
             # Read the CSV file into a DataFrame
-            df = pd.read_csv(source_file_path)
+            df = pd.read_csv(source_file_path,sep=';')
             # Convert the DataFrame to a Parquet file
             df.to_parquet(target_file_path)
 
@@ -52,3 +54,8 @@ def get_source(target_folder, columns_to_merge):
     merged_df = pd.concat(dfs, ignore_index=True)
 
     return merged_df
+
+source_folder = r'/Users/jessie/Desktop/test/source'
+target_folder = r'/Users/jessie/Desktop/test/parquet'
+
+convert_csv_to_parquet(source_folder, target_folder)
