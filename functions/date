@@ -1,0 +1,49 @@
+import os
+import re
+from datetime import datetime
+
+# 正则表达式提取日期并转换为datetime的函数
+def extract_dates_and_convert(filename):
+    date_pattern = re.compile(r'(\d{8})_(\d{8})\.csv$')
+    dates = date_pattern.findall(filename)
+    if dates:
+        start_date_str, end_date_str = dates[0]
+        start_date = datetime.strptime(start_date_str, '%Y%m%d')
+        end_date = datetime.strptime(end_date_str, '%Y%m%d')
+        return start_date, end_date
+    else:
+        return None, None
+
+# 检测时间重叠的函数
+def check_overlap(intervals):
+    for i, current in enumerate(intervals):
+        for j, other in enumerate(intervals):
+            if i != j and max(current[0], other[0]) < min(current[1], other[1]):
+                return True
+    return False
+
+# 主函数
+def main(folder_path):
+    files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
+    intervals = []
+
+    for file in files:
+        start_date, end_date = extract_dates_and_convert(file)
+        if start_date and end_date:
+            intervals.append((start_date, end_date))
+        else:
+            print(f"文件名不符合预期格式，无法提取日期: {file}")
+            continue
+
+    if check_overlap(intervals):
+        print("Error: 时间重叠发现.")
+    else:
+        print("没有时间重叠. 脚本继续执行...")
+
+        # 在这里继续执行其他任务
+
+# 设置文件夹路径
+folder_path = '/path/to/your/folder'  # 替换为你的文件夹实际路径
+
+# 运行主函数
+main(folder_path)
