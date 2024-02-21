@@ -47,3 +47,8 @@ folder_path = '/path/to/your/folder'  # 替换为你的文件夹实际路径
 
 # 运行主函数
 main(folder_path)
+
+
+Here is the translation of the provided Chinese text into English:
+
+"The parquet files are copies of the csv files, enabling the script to read the required columns more quickly and avoiding the processing of the entire csv file. When a new csv is added to the source folder, the script will convert it into parquet format and store it. Subsequently, the script will directly read from the parquet files, allowing for faster data reading and modification."
