@@ -34,3 +34,42 @@ def filter_super_groups(df, dataframe2):
 # Call the function and print the result
 filtered_dataframe = filter_super_groups(df, dataframe2)
 print(filtered_dataframe)
+
+
+
+import pandas as pd
+
+# Sample data creation
+data = {
+    'member': ['ab', 'ac', 'ad', 'ab', 'ac', 'ad'],
+    'group': ['XY', 'XY', 'XZ', 'S', 'S', 'S'],
+    'isSuper': [False, False, False, True, True, True]
+}
+df = pd.DataFrame(data)
+
+# Find all super groups
+super_groups = df[df['isSuper']]['group'].unique()
+
+# Create a dictionary to map members to their super groups, if any
+member_to_supergroup = {}
+
+# Populate the dictionary
+for super_group in super_groups:
+    members_in_super_group = df[(df['group'] == super_group) & (df['isSuper'])]['member'].unique()
+    for member in members_in_super_group:
+        member_to_supergroup[member] = super_group
+
+# Define a function to apply to the DataFrame to determine the top_group
+def get_top_group(row):
+    if row['isSuper']:
+        return 'super group'
+    else:
+        if row['member'] in member_to_supergroup:
+            return member_to_supergroup[row['member']]
+        else:
+            return row['group']
+
+# Apply the function to create the new column
+df['top_group'] = df.apply(get_top_group, axis=1)
+
+print(df)
