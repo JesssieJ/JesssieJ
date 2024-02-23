@@ -1,0 +1,36 @@
+import pandas as pd
+
+# This is the original dataframe with `member`, `group`, and `isSuper` columns
+df = pd.DataFrame({
+    'member': ['member1', 'member1', 'member2', 'member3'],
+    'group': ['groupA', 'superGroupA', 'groupB', 'groupC'],
+    'isSuper': [False, True, False, False]
+})
+
+# This is your new dataframe with `member` and `group` columns
+dataframe2 = pd.DataFrame({
+    'member': ['member1', 'member1', 'member2', 'member3'],
+    'group': ['groupA', 'superGroupA', 'groupB', 'groupC']
+})
+
+# Define the function to filter the dataframe
+def filter_super_groups(df, dataframe2):
+    # Merge the new dataframe with the original one to get the `isSuper` column
+    merged_df = dataframe2.merge(df, on=['member', 'group'], how='left')
+
+    # Fill NaN values in isSuper with False, assuming unmarked groups are normal groups
+    merged_df['isSuper'].fillna(False, inplace=True)
+
+    # Sort the merged dataframe such that super groups come first for each member
+    # and then drop duplicates based on the member column, keeping the first occurrence
+    filtered_df = merged_df.sort_values(by=['member', 'isSuper'], ascending=[True, False]) \
+                           .drop_duplicates(subset='member', keep='first')
+
+    # Drop the isSuper column as it is no longer needed
+    filtered_df = filtered_df.drop(columns=['isSuper'])
+
+    return filtered_df
+
+# Call the function and print the result
+filtered_dataframe = filter_super_groups(df, dataframe2)
+print(filtered_dataframe)
