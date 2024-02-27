@@ -1,35 +1,35 @@
 import pandas as pd
 
-# 模拟的DataFrame数据
+def process_dataframe_entirely(df):
+    # 检查并替换满足条件的组合
+    for name, group_df in df.groupby('name'):
+        groups = set(group_df['group'])
+        combos = [set(combo) for combo in [('a', 'b'), ('a', 'c'), ('b', 'c')]]
+        for combo in combos:
+            if groups.issuperset(combo):
+                # 替换组合中第一个元素
+                replacement = ', '.join(combo)
+                df.loc[(df['name'] == name) & (df['group'].isin(combo)), 'group'] = replacement
+                # 删除组合中其他元素
+                df = df.drop(df[(df['name'] == name) & (df['group'].isin(combo.difference({replacement})))].index)
+                break # 如果已经替换，则跳出循环
+
+    # 删除只有一个group的name
+    df = df[df.groupby('name')['name'].transform('count') > 1]
+
+    return df
+
+# 示例DataFrame数据
 data = {
     'name': ['name1', 'name1', 'name1', 'name2', 'name2', 'name3', 'name3', 'name3'],
     'group': ['a', 'b', 'd', 'a', 'c', 'a', 'b', 'c']
 }
+
+# 将数据转换为DataFrame
 df = pd.DataFrame(data)
 
-# 1）找到同时包含'a', 'b', 'c'中任意两个的name，并进行相应的替换和删除操作
-def replace_and_drop(rows):
-    groups = set(rows['group'])
-    # 检查是否包含'a', 'b', 'c'中的任意两个
-    combos = [set(combo) for combo in [('a', 'b'), ('a', 'c'), ('b', 'c')]]
-    for combo in combos:
-        if groups.issuperset(combo):
-            # 构建替换字符串，例如：'a, b'
-            replacement = ', '.join(combo)
-            combo_list = list(combo)
-            # 替换第一个找到的group为拼接后的字符串
-            rows.loc[rows['group'] == combo_list[0], 'group'] = replacement
-            # 删除组合中的其他group
-            rows = rows[~rows['group'].isin(combo_list[1:])]
-            break # 如果进行了替换，则不需要检查其他组合
-    return rows
+# 处理DataFrame
+df_processed = process_dataframe_entirely(df)
 
-# 应用函数并重置索引
-df = df.groupby('name').apply(replace_and_drop).reset_index(drop=True)
-
-# 2）删除group是唯一值的name行
-group_counts = df['name'].value_counts()
-single_groups = group_counts[group_counts == 1].index
-df = df[~df['name'].isin(single_groups)]
-
-print(df)
+# 打印处理后的DataFrame
+print(df_processed)
