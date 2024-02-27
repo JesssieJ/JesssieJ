@@ -33,3 +33,21 @@ df_processed = process_dataframe_entirely(df)
 
 # 打印处理后的DataFrame
 print(df_processed)
+
+
+import pandas as pd
+
+# 假设的DataFrame
+df = pd.DataFrame({
+    'name': ['name1', 'name2', 'name3', 'name4'],
+    'agg': ['abc', 'def', 'abc', 'ghi']
+})
+
+# 筛选出所有df['agg'] == 'abc'的name
+names_with_agg_abc = df.loc[df['agg'] == 'abc', 'name'].tolist()
+
+# 使用f-string将它们格式化为字符串
+names_with_agg_abc_str = ', '.join(names_with_agg_abc)
+formatted_string = f"The following 'name'(s) have 'agg' equal to 'abc': {names_with_agg_abc_str}"
+
+print(formatted_string)
