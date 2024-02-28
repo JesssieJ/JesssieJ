@@ -38,3 +38,38 @@ def update_rows(df, checklists):
 df = update_rows(df, lists_to_check)
 
 print(df)
+
+
+import pandas as pd
+
+# 示例DataFrame
+df = pd.DataFrame({
+    'name': ['Alice', 'Alice', 'Alice', 'Bob', 'Bob', 'Charlie', 'Charlie', 'Charlie'],
+    'b': [1, 2, 4, 7, 8, 1, 2, 3]
+})
+
+# 要检查的两个列表
+list1 = [1, 2, 4]
+list2 = [7, 8]
+
+# 将列表转换为字符串，以便稍后可以将其插入DataFrame
+str_list1 = ','.join(map(str, list1))
+str_list2 = ','.join(map(str, list2))
+
+# 定义一个函数，用于检查分组内的'b'列是否包含list1或list2
+def check_and_transform(group, checklist, checklist_str):
+    if set(checklist).issubset(set(group['b'])):
+        # 如果包含，更改其中一个'b'值为整个列表的字符串表示
+        group = group.head(1)
+        group['b'] = checklist_str
+    else:
+        # 如果不包含，则保留原始分组
+        group = group
+    return group
+
+# 应用函数检查每个分组
+df = df.groupby('name', group_keys=False).apply(check_and_transform, list1, str_list1)
+df = df.groupby('name', group_keys=False).apply(check_and_transform, list2, str_list2)
+
+print(df)
+
