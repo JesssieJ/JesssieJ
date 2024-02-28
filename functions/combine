@@ -51,3 +51,26 @@ names_with_agg_abc_str = ', '.join(names_with_agg_abc)
 formatted_string = f"The following 'name'(s) have 'agg' equal to 'abc': {names_with_agg_abc_str}"
 
 print(formatted_string)
+
+import pandas as pd
+
+# 假设这是您的初始DataFrame
+df = pd.DataFrame({
+    'a': [1, 1, 1, 2, 2, 2, 3, 3, 3],
+    'b': [1, 2, 3, 1, 2, 3, 1, 2, 3]
+})
+
+# 检查哪些'a'的值有对应的1, 2和3在'b'列中
+groups_with_123 = df.groupby('a')['b'].apply(lambda x: set(x) == {1, 2, 3})
+
+# 找出需要修改的'a'的值
+a_values_to_change = groups_with_123[groups_with_123].index.tolist()
+
+# 对于这些'a'的值，将'b'为1的行修改为123，并删除'b'为2或3的行
+for a_val in a_values_to_change:
+    # 更新'b'值为1的行
+    df.loc[(df['a'] == a_val) & (df['b'] == 1), 'b'] = 123
+    # 删除'b'值为2或3的行
+    df = df[~((df['a'] == a_val) & (df['b'].isin([2, 3])))]
+
+print(df)
