@@ -1,0 +1,40 @@
+import pandas as pd
+
+# 示例DataFrame
+df = pd.DataFrame({
+    'name': ['Alice', 'Alice', 'Alice', 'Bob', 'Bob', 'Charlie', 'Charlie', 'Charlie'],
+    'b': [1, 2, 4, 7, 8, 1, 2, 3]
+})
+
+# 要检查的列表集合
+lists_to_check = {
+    'list1': [1, 2, 4],
+    'list2': [7, 8]
+}
+
+# 定义一个函数，用于更新DataFrame
+def update_rows(df, checklists):
+    # 创建一个新的DataFrame，用于存储更新后的数据
+    updated_df = pd.DataFrame(columns=df.columns)
+    # 遍历每个分组
+    for name, group in df.groupby('name'):
+        modified = False
+        # 遍历每个列表进行检查
+        for list_name, checklist in checklists.items():
+            # 如果分组的'b'列包含当前列表的所有元素
+            if set(checklist).issubset(set(group['b'])):
+                # 更新其中一个'b'值为整个列表的字符串表示，并添加到updated_df
+                new_row = group.iloc[0].copy()
+                new_row['b'] = ','.join(map(str, checklist))
+                updated_df = updated_df.append(new_row, ignore_index=True)
+                modified = True
+                break # 跳出循环，不再检查其它列表
+        # 如果分组没有被修改，则将原始数据添加到updated_df
+        if not modified:
+            updated_df = updated_df.append(group, ignore_index=True)
+    return updated_df
+
+# 调用函数并传入原始DataFrame和列表集合
+df = update_rows(df, lists_to_check)
+
+print(df)
